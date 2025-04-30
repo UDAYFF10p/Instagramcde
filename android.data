@@ -1,0 +1,34 @@
+// File: .github/workflows/zip-upload.yml
+name: Zip and Upload Backend
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  zip-and-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Zip Backend Code
+      run: zip -r instagram-backend.zip . -x '*.git*' '*.github*' 'node_modules/*'
+
+    - name: Upload ZIP to GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: instagram-backend.zip
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+# Notes:
+# - This script will zip the full backend excluding .git, .github and node_modules.
+# - It will attach the zip to the current GitHub release after each push to `main`.
+# - To trigger, just `git push` or `git commit --allow-empty -m "trigger zip" && git push`.
